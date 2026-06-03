@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: .
+    container_name: social_backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - social_network
+
+networks:
+  social_network:
+    driver: bridge
