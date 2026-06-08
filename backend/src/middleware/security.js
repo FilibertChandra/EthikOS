@@ -61,13 +61,14 @@ const applySecurityMiddleware = (app) => {
 
   // Cross-Origin Resource Sharing (cors) allows us to specify which domains can access our API. In development, we can allow all origins, but in production, we should restrict this to our frontend domain.
   // Allow Flutter web during development
+  const isDev = process.env.NODE_ENV === 'development';
   app.use(cors({
     origin: function(origin, callback) {
-      // Allow all localhost origins in development
-      if (!origin || 
-          origin.startsWith('http://localhost') || 
-          origin.startsWith('http://127.0.0.1') ||
-          origin.startsWith('http://140.116.223.195')) {
+      // In development allow any origin (e.g. Flutter web on a random localhost
+      // port). In production, restrict to the known frontend origins.
+      if (isDev ||
+          !origin ||
+          origin.startsWith('http://140.116.223.195:5000')) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));

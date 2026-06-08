@@ -38,6 +38,7 @@ class Post {
   final String authorId;
   final String authorUsername;
   final String content;
+  final String? imageUrl;
   final List<String> likes;
   final List<Comment> comments;
   final DateTime createdAt;
@@ -47,6 +48,7 @@ class Post {
     required this.authorId,
     required this.authorUsername,
     required this.content,
+    this.imageUrl,
     required this.likes,
     required this.comments,
     required this.createdAt,
@@ -70,6 +72,7 @@ class Post {
       authorId: authorId,
       authorUsername: authorUsername,
       content: json['content']?.toString() ?? '',
+      imageUrl: json['imageUrl']?.toString(),
       likes:
           List<String>.from((json['likes'] as List).map((e) => e.toString())),
       comments:

@@ -22,9 +22,12 @@ const postSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: [true, 'Post content is required'],
     trim: true,
+    default: '',
     maxlength: [500, 'Post cannot exceed 500 characters']
+  },
+  imageUrl: {
+    type: String
   },
   likes: [
     {

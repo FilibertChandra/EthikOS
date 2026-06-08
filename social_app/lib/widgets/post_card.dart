@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../config/app_config.dart';
 import '../models/post.dart';
 import '../providers/auth_provider.dart';
 import '../providers/post_provider.dart';
@@ -64,6 +65,20 @@ class _PostCardState extends State<PostCard> {
             ),
             const SizedBox(height: 12),
             Text(widget.post.content),
+            if (widget.post.imageUrl != null &&
+                widget.post.imageUrl!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  '${AppConfig.serverRoot}${widget.post.imageUrl}',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) =>
+                      const SizedBox.shrink(),
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             Row(
               children: [

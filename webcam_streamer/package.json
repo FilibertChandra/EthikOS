@@ -1,0 +1,12 @@
+{
+  "name": "webcam-streamer",
+  "version": "1.0.0",
+  "description": "Streams a USB webcam over HTTP (MJPEG) so the EthikOS app can view it and capture stills. Run this on the PC the webcam is plugged into.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

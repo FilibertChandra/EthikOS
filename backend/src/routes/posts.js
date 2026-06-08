@@ -1,7 +1,31 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const router = express.Router();
 const Post = require('../models/Post');
 const auth = require('../middleware/authMiddleware');
+
+// Store uploaded images on disk under backend/uploads/
+const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `post-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) return cb(null, true);
+    cb(new Error('Only image uploads are allowed'));
+  }
+});
 
 // All routes below require authentication
 router.use(auth);
@@ -20,14 +44,23 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// Create a post
-router.post('/', async (req, res, next) => {
+// Create a post (optionally with an image, sent as multipart/form-data)
+router.post('/', upload.single('image'), async (req, res, next) => {
   try {
     const { content } = req.body;
 
+    // multer puts the saved file on req.file; expose it as a public path.
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+    // A post needs at least text or an image.
+    if ((!content || !content.trim()) && !imageUrl) {
+      return res.status(400).json({ message: 'Post must have text or an image' });
+    }
+
     const post = await Post.create({
       author: req.user.id,
-      content
+      content: content || '',
+      imageUrl
     });
 
     // Populate author before returning

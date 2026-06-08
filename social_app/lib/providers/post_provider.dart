@@ -34,9 +34,10 @@ class PostProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> createPost(String content) async {
+  Future<bool> createPost(String content, {Uint8List? imageBytes}) async {
     try {
-      final newPost = await _postService.createPost(content);
+      final newPost =
+          await _postService.createPost(content, imageBytes: imageBytes);
       _posts.insert(0, newPost);
       notifyListeners();
       return true;
@@ -63,6 +64,7 @@ class PostProvider with ChangeNotifier {
           authorId: post.authorId,
           authorUsername: post.authorUsername,
           content: post.content,
+          imageUrl: post.imageUrl,
           likes: updatedLikes,
           comments: post.comments,
           createdAt: post.createdAt,

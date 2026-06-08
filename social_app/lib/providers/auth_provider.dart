@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
@@ -61,7 +63,54 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> checkLoginStatus() async {
-    final token = await ApiService.getToken();
-    return token != null;
+    try {
+      final token = await ApiService.getToken();
+      if (token == null) {
+        debugPrint('checkLoginStatus: no token found');
+        return false;
+      }
+
+      // Decode JWT payload
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        debugPrint('checkLoginStatus: invalid token format');
+        await ApiService.deleteToken();
+        return false;
+      }
+
+      // Decode base64 payload
+      String payload = parts[1];
+      while (payload.length % 4 != 0) {
+        payload += '=';
+      }
+
+      final decoded = utf8.decode(base64Url.decode(payload));
+      final data = jsonDecode(decoded);
+      debugPrint('checkLoginStatus: token payload: $data');
+
+      // Check token expiry
+      final exp = data['exp'] as int;
+      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      if (now >= exp) {
+        debugPrint('checkLoginStatus: token expired');
+        await ApiService.deleteToken();
+        return false;
+      }
+
+      // Restore _currentUser from token
+      _currentUser = User(
+        id: data['id']?.toString() ?? '',
+        username: data['username']?.toString() ?? '',
+        email: '',
+      );
+      debugPrint('checkLoginStatus: restored user: ${_currentUser?.username}');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('checkLoginStatus error: $e');
+      await ApiService.deleteToken();
+      return false;
+    }
   }
 }
