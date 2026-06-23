@@ -1,2 +1,18 @@
 # Internal/private docs — keep locally, do not push
 CODE_EXPLANATION.md
+Documentation.md
+
+# Dependencies
+node_modules/
+
+# Backend runtime data (uploaded post images)
+backend/uploads/
+
+# Local ffmpeg binaries / source if ever placed in the streamer folder
+webcam_streamer/ffmpeg/
+webcam_streamer/*.exe
+
+# Environment secrets
+.env
+*.env
+!*.env.example

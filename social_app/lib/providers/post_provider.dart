@@ -77,10 +77,38 @@ class PostProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> addComment(String postId, String text) async {
+  Future<bool> addComment(
+    String postId,
+    String text, {
+    required String userId,
+    required String username,
+  }) async {
     try {
       await _postService.addComment(postId, text);
-      await fetchPosts();
+
+      // Append the comment locally instead of re-downloading the whole feed.
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        final post = _posts[index];
+        final newComment = Comment(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          userId: userId,
+          username: username,
+          text: text,
+          createdAt: DateTime.now(),
+        );
+        _posts[index] = Post(
+          id: post.id,
+          authorId: post.authorId,
+          authorUsername: post.authorUsername,
+          content: post.content,
+          imageUrl: post.imageUrl,
+          likes: post.likes,
+          comments: [...post.comments, newComment],
+          createdAt: post.createdAt,
+        );
+        notifyListeners();
+      }
       return true;
     } catch (e) {
       _errorMessage = e.toString();

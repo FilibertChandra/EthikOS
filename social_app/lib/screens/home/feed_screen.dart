@@ -51,7 +51,29 @@ class _FeedScreenState extends State<FeedScreen> {
       body: postProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : postProvider.errorMessage != null
-              ? Center(child: Text(postProvider.errorMessage!))
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cloud_off,
+                            size: 48, color: Colors.grey),
+                        const SizedBox(height: 12),
+                        Text(
+                          postProvider.errorMessage!,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () => postProvider.fetchPosts(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               : postProvider.posts.isEmpty
                   ? const Center(child: Text('No posts yet. Be the first!'))
                   : RefreshIndicator(
