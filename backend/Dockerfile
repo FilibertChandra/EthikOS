@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# ffmpeg is used to grab a single still frame from a CCTV HLS stream
+RUN apk add --no-cache ffmpeg
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./

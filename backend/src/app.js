@@ -23,6 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/posts', require('./routes/posts'));
+app.use('/api/cctv', require('./routes/cctv'));
 
 // Handle unknown routes
 app.use((req, res) => {

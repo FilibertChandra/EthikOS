@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/post_provider.dart';
-import '../webcam/webcam_screen.dart';
+import '../cctv/cctv_screen.dart';
 
 class CreatePostScreen extends StatefulWidget {
   /// Optional image (e.g. a webcam snapshot) to attach to the post.
@@ -31,10 +31,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.dispose();
   }
 
-  Future<void> _openWebcam() async {
+  Future<void> _openCctv() async {
     final bytes = await Navigator.push<Uint8List>(
       context,
-      MaterialPageRoute(builder: (_) => const WebcamScreen()),
+      MaterialPageRoute(builder: (_) => const CctvScreen()),
     );
     if (bytes != null && mounted) {
       setState(() => _imageBytes = bytes);
@@ -127,12 +127,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
-                      onPressed: _openWebcam,
+                      onPressed: _openCctv,
                       icon: const Icon(Icons.videocam),
                       label: Text(
                         _imageBytes == null
-                            ? 'Capture from webcam'
-                            : 'Retake from webcam',
+                            ? 'Capture from CCTV'
+                            : 'Retake from CCTV',
                       ),
                     ),
                   ),

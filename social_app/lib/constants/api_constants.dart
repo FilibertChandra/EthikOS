@@ -11,4 +11,7 @@ class ApiConstants {
   static String get posts => '$baseUrl/posts';
   static String likePost(String id) => '$baseUrl/posts/$id/like';
   static String commentPost(String id) => '$baseUrl/posts/$id/comment';
+
+  // CCTV endpoints
+  static String get cctvSnapshot => '$baseUrl/cctv/snapshot';
 }

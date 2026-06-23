@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../config/app_config.dart';
@@ -29,9 +30,12 @@ class _PostCardState extends State<PostCard> {
     if (_commentController.text.trim().isEmpty) return;
 
     final postProvider = Provider.of<PostProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await postProvider.addComment(
       widget.post.id,
       _commentController.text.trim(),
+      userId: authProvider.currentUser?.id ?? '',
+      username: authProvider.currentUser?.username ?? 'You',
     );
 
     if (success && mounted) {
@@ -70,12 +74,18 @@ class _PostCardState extends State<PostCard> {
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  '${AppConfig.serverRoot}${widget.post.imageUrl}',
+                child: CachedNetworkImage(
+                  imageUrl: '${AppConfig.serverRoot}${widget.post.imageUrl}',
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stack) =>
-                      const SizedBox.shrink(),
+                  // ngrok header so its free-plan interstitial doesn't break images.
+                  httpHeaders: const {'ngrok-skip-browser-warning': 'true'},
+                  placeholder: (context, url) => Container(
+                    height: 200,
+                    color: Colors.grey.shade200,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => const SizedBox.shrink(),
                 ),
               ),
             ],
